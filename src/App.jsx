@@ -37,6 +37,11 @@ const App = () => {
     }
   }
 
+  const handletoggleTask = (id) => {
+    const tareasActualizadas = tareas.map(tar => tar.id === id ? { ...tar, completed: !tar.completed } : tar)
+    setTareas(tareasActualizadas);
+  }
+
   return (
     <>
       <div className='pos-container'>
@@ -46,20 +51,24 @@ const App = () => {
           {tareas
           .filter(tarea => tarea.title.toLowerCase().includes(buscarTarea.toLowerCase()))
           .map(tarea => 
-            <div className='tarea-container' key={tarea.id}>
-              {tarea.title} {tarea.completed ? "✅" : "❌"}
-            </div>
+            <BotonTask 
+              key={tarea.id}
+              label={`${tarea.title} ${tarea.completed ? "✅" : "❌"}`} 
+              className='tarea-container' 
+              handleClick={() => {
+                handletoggleTask(tarea.id);}}
+              />
           )}
           
           <div className='add-container'>
               <Input placeholder="Nueva tarea" value={nuevaTarea} onChangeValue={setNuevaTarea} />
 
-            <BotonTask 
-            label={`➕ Añadir ${tareas.length}`}
-            handleClick={() => {
-              addTask(nuevaTarea),
-              setNuevaTarea("")
-            }} />
+              <BotonTask 
+              label={`➕ Añadir ${tareas.length}`}
+              handleClick={() => {
+                addTask(nuevaTarea),
+                setNuevaTarea("")
+              }} />
           </div>
         </div>
       </div>
