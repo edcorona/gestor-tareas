@@ -27,19 +27,26 @@ const App = () => {
     }
   ]);
 
-  console.log(tareas);
+  
 
   const addTask = (titulo) => {
-    if (!titulo.trim() === "") {
-    setTareas([...tareas, {id: Date.now(), title: titulo, completed:false}]);
-    } else {
-      alert("La tarea no puede estar vacía");
+    
+    if (!titulo.trim()) {
+      return alert("La tarea no puede estar vacía");
     }
+
+    const nueva = {id: Date.now(), title: titulo.trim(), completed: false }
+
+    setTareas(prev => [...prev, nueva]) //functional update
+    setNuevaTarea("")
   }
 
   const handletoggleTask = (id) => {
-    const tareasActualizadas = tareas.map(tar => tar.id === id ? { ...tar, completed: !tar.completed } : tar)
-    setTareas(tareasActualizadas);
+    setTareas(prev => prev.map(tar => tar.id === id ? { ...tar, completed: !tar.completed } : tar )); //functional update
+  }
+
+  const delTask = (id) => {
+    setTareas(prev => prev.filter(tar => tar.id !== id)); //functional update
   }
 
   return (
@@ -51,13 +58,23 @@ const App = () => {
           {tareas
           .filter(tarea => tarea.title.toLowerCase().includes(buscarTarea.toLowerCase()))
           .map(tarea => 
-            <BotonTask 
-              key={tarea.id}
-              label={`${tarea.title} ${tarea.completed ? "✅" : "❌"}`} 
-              className='tarea-container' 
-              handleClick={() => {
-                handletoggleTask(tarea.id);}}
+            <div key={tarea.id} style={{display: 'flex', flexDirection:'row', justifyContent:'center', gap:10}}>
+              <BotonTask 
+                label={`${tarea.title} ${tarea.completed ? "✅" : "❌"}`} 
+                className='tarea-container' 
+                handleClick={() => {
+                  handletoggleTask(tarea.id);}}
+                />
+
+              <BotonTask  
+                label={"❌"}
+                className='iconDel-btn'
+                handleClick={() => {
+                  delTask(tarea.id)
+                }}
               />
+            </div>
+
           )}
           
           <div className='add-container'>
@@ -65,10 +82,7 @@ const App = () => {
 
               <BotonTask 
               label={`➕ Añadir ${tareas.length}`}
-              handleClick={() => {
-                addTask(nuevaTarea),
-                setNuevaTarea("")
-              }} />
+              handleClick={() => addTask(nuevaTarea)} />
           </div>
         </div>
       </div>

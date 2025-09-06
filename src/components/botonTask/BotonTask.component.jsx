@@ -1,11 +1,11 @@
 
 
-const BotonTask = ({label, handleClick}) => {
+const BotonTask = ({className,label, handleClick}) => {
 
 
 
     return (
-        <button onClick={handleClick}> 
+        <button className={className} onClick={handleClick}> 
             {label}
         </button>
     );

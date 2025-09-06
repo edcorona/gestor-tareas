@@ -18,7 +18,14 @@
 
 .tarea-container {
   text-align: center;
-  padding: 8px;
+  padding: 8px 18px;
   border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.iconDel-btn {
+  text-align: center;
+  padding: 8px;
+  border: 1px solid red;
   border-radius: 8px;
 }
