@@ -3,14 +3,29 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import Input from './components/Input/Input.component'
-import BotonTask from './components/BotonTask/BotonTask.component'
+import BotonTask from './components/BotonTask/BotonTask.component';
+import TaskList from './components/taskList/taskList.component'
 
 const App = () => {
 
+  const [tareas, setTareas] = useState([])
+  const [loading, setLoading] = useState(true);
   const [nuevaTarea, setNuevaTarea] = useState("")
   const [buscarTarea, setBuscarTarea] = useState("")
 
-  const [tareas, setTareas] = useState([
+  useState(()=>{
+    const fetchTareas = async () => {
+      const res = await fetch("https://jsonplaceholder.typicode.com/todos?_limit=7");
+      const data = await res.json();
+      console.log(data);
+      setTareas(data);
+      setLoading(false);
+    };
+
+    fetchTareas();
+  },[])
+
+  {/*const [tareas, setTareas] = useState([
     {
       id:1,
       title: "Primera tarea",
@@ -25,9 +40,7 @@ const App = () => {
       id:3,title: "Tercera tarea",
       completed:false
     }
-  ]);
-
-  
+  ]);*/}
 
   const addTask = (titulo) => {
     
@@ -48,6 +61,7 @@ const App = () => {
   const delTask = (id) => {
     setTareas(prev => prev.filter(tar => tar.id !== id)); //functional update
   }
+  if (loading) return <p>Cargando tareas...</p>
 
   return (
     <>
@@ -55,27 +69,12 @@ const App = () => {
         <div className='column-container'>
           <Input placeholder="Buscar tarea" value={buscarTarea} onChangeValue={setBuscarTarea} />
           
-          {tareas
-          .filter(tarea => tarea.title.toLowerCase().includes(buscarTarea.toLowerCase()))
-          .map(tarea => 
-            <div key={tarea.id} style={{display: 'flex', flexDirection:'row', justifyContent:'center', gap:10}}>
-              <BotonTask 
-                label={`${tarea.title} ${tarea.completed ? "✅" : "❌"}`} 
-                className='tarea-container' 
-                handleClick={() => {
-                  handletoggleTask(tarea.id);}}
-                />
-
-              <BotonTask  
-                label={"❌"}
-                className='iconDel-btn'
-                handleClick={() => {
-                  delTask(tarea.id)
-                }}
-              />
-            </div>
-
-          )}
+          <TaskList
+            tareas={tareas}
+            buscarTarea={buscarTarea}
+            onToggle={handletoggleTask}
+            onDelete={delTask}
+          />
           
           <div className='add-container'>
               <Input placeholder="Nueva tarea" value={nuevaTarea} onChangeValue={setNuevaTarea} />
