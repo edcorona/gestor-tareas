@@ -1,9 +1,9 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect, useState } from 'react'
+
+import { PacmanLoader } from 'react-spinners'
 import './App.css'
 import Input from './components/Input/Input.component'
-import BotonTask from './components/BotonTask/BotonTask.component';
+import BotonTask from './components/BotonTask/BotonTask.component'
 import TaskList from './components/taskList/taskList.component'
 
 const App = () => {
@@ -12,18 +12,32 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [nuevaTarea, setNuevaTarea] = useState("")
   const [buscarTarea, setBuscarTarea] = useState("")
+  const [error, setError] = useState(null);
 
-  useState(()=>{
+  useEffect(() => {
     const fetchTareas = async () => {
-      const res = await fetch("https://jsonplaceholder.typicode.com/todos?_limit=7");
-      const data = await res.json();
-      console.log(data);
-      setTareas(data);
-      setLoading(false);
-    };
+      try {
+        setTimeout(async ()=> {
+          const response = await fetch('https://jsonplaceholder.typicode.com/todos?_limit=7');
+
+          if(!response.ok)
+            throw new Error(`HTTP error! Estatus: ${response.status}`);
+
+          const data = await response.json();
+          console.log(data);
+          setTareas(data);
+          setLoading(false);
+        }, 5000);
+      } catch (error) {
+        console.error('Error buscando tareas', error);
+        setError('A ocurrido un error al buscar la data. Por favor intenta más tarde');
+        setLoading(false);
+      }
+    }
 
     fetchTareas();
-  },[])
+
+  }, [])
 
   {/*const [tareas, setTareas] = useState([
     {
@@ -43,13 +57,10 @@ const App = () => {
   ]);*/}
 
   const addTask = (titulo) => {
-    
     if (!titulo.trim()) {
       return alert("La tarea no puede estar vacía");
     }
-
     const nueva = {id: Date.now(), title: titulo.trim(), completed: false }
-
     setTareas(prev => [...prev, nueva]) //functional update
     setNuevaTarea("")
   }
@@ -61,20 +72,22 @@ const App = () => {
   const delTask = (id) => {
     setTareas(prev => prev.filter(tar => tar.id !== id)); //functional update
   }
-  if (loading) return <p>Cargando tareas...</p>
+  
 
   return (
     <>
       <div className='pos-container'>
         <div className='column-container'>
           <Input placeholder="Buscar tarea" value={buscarTarea} onChangeValue={setBuscarTarea} />
+          {
+            loading ? (<PacmanLoader color='#fff506' size={25} />) : (<TaskList
+              tareas={tareas}
+              buscarTarea={buscarTarea}
+              onToggle={handletoggleTask}
+              onDelete={delTask}
+            />)
+          }
           
-          <TaskList
-            tareas={tareas}
-            buscarTarea={buscarTarea}
-            onToggle={handletoggleTask}
-            onDelete={delTask}
-          />
           
           <div className='add-container'>
               <Input placeholder="Nueva tarea" value={nuevaTarea} onChangeValue={setNuevaTarea} />

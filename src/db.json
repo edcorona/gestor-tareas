@@ -1,0 +1,7 @@
+{
+    "tareas": [
+      { "id": 1, "title": "Aprender React", "completed": false, "priority": "alta" },
+      { "id": 2, "title": "Practicar useEffect", "completed": true, "priority": "media" }
+    ]
+}
+  
