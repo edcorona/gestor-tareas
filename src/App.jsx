@@ -5,6 +5,7 @@ import './App.css'
 import Input from './components/Input/Input.component'
 import BotonTask from './components/BotonTask/BotonTask.component'
 import TaskList from './components/taskList/taskList.component'
+import { Plus } from 'lucide-react'
 
 const App = () => {
 
@@ -18,10 +19,10 @@ const App = () => {
     const fetchTareas = async () => {
       try {
         setTimeout(async ()=> {
-          const response = await fetch('https://jsonplaceholder.typicode.com/todos?_limit=7');
+          const response = await fetch('http://localhost:3001/tareas');
 
           if(!response.ok)
-            throw new Error(`HTTP error! Estatus: ${response.status}`);
+            throw new Error(`HTTP GET error! Estatus: ${response.status}`);
 
           const data = await response.json();
           console.log(data);
@@ -56,13 +57,35 @@ const App = () => {
     }
   ]);*/}
 
-  const addTask = (titulo) => {
-    if (!titulo.trim()) {
-      return alert("La tarea no puede estar vacía");
-    }
-    const nueva = {id: Date.now(), title: titulo.trim(), completed: false }
-    setTareas(prev => [...prev, nueva]) //functional update
-    setNuevaTarea("")
+  const addTask = async (titulo) => {
+    try {  
+      if (!titulo.trim()) {
+        return alert("La tarea no puede estar vacía");
+      }
+
+        const response = await fetch('http://localhost:3001/tareas', {
+          method: 'POST',
+          headers: {"Content-type": "application/json"},
+          body: JSON.stringify({
+            title: titulo.trim(),
+            completed: false,
+            priority: "media"
+          })
+        })
+        if(!response.ok)
+          throw new Error(`HTTP POST error! Estatus: ${response.status}`);
+
+        const data = await response.json();
+        setTareas(prev => [...prev, data]) //functional update
+        setNuevaTarea("")
+
+      } catch(error) {
+        console.error('Error agregando tarea', error);
+        setError('A ocurrido un error al agregar tarea')
+        setLoading(false);
+      }
+    
+    
   }
 
   const handletoggleTask = (id) => {
@@ -92,8 +115,13 @@ const App = () => {
           <div className='add-container'>
               <Input placeholder="Nueva tarea" value={nuevaTarea} onChangeValue={setNuevaTarea} />
 
-              <BotonTask 
-              label={`➕ Añadir ${tareas.length}`}
+              <BotonTask className={'tarea-container'}
+              label={
+                <>
+                {<Plus color='yellow'/>}
+                {`Añadir ${tareas.length}`}
+                </>
+              }
               handleClick={() => addTask(nuevaTarea)} />
           </div>
         </div>
