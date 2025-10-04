@@ -61,7 +61,7 @@ const App = () => {
     try {  
       if (!titulo.trim()) {
         return alert("La tarea no puede estar vacía");
-      }
+        }
 
         const response = await fetch('http://localhost:3001/tareas', {
           method: 'POST',
@@ -88,12 +88,52 @@ const App = () => {
     
   }
 
-  const handletoggleTask = (id) => {
-    setTareas(prev => prev.map(tar => tar.id === id ? { ...tar, completed: !tar.completed } : tar )); //functional update
+  const handletoggleTask = async (id) => {
+    try {
+
+      const tarea = tareas.find(tar => tar.id === id);
+      if (!tarea)
+        throw new Error('Tarea no encontrada');
+
+      const response = await fetch(`http://localhost:3001/tareas/${id}`, {
+        method: "PATCH",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ completed: !tarea.completed })
+      })
+      if (!response.ok)
+        throw new Error(`HTTP PATCH  error! Estatus: ${response.status}`);
+
+      const data = await response.json();
+      setTareas(prev => prev.map(tar => tar.id === id ? { ...tar, ...data } : tar )); //functional update
+
+    } catch(error) {
+      console.error('Error actualizando estatus tarea', error);
+      setError('A ocurrido un error al actualizar estatus tarea');
+      setLoading(false);
+    }
   }
 
-  const delTask = (id) => {
-    setTareas(prev => prev.filter(tar => tar.id !== id)); //functional update
+  const delTask = async (id) => {
+    try {
+      const tarea = tareas.find(tar => tar.id === id);
+      if (!tarea)
+        throw new Error('Tarea no encontrada');
+
+      const response = await fetch(`http://localhost:3001/tareas/${id}`, { 
+        method: "DELETE",
+      })
+      if (!response.ok)
+        throw new Error(`HTTP DELETE error! Estatus: ${response.status}`);
+
+      // json-server responde con {} en DELETE, no hace falta leer el body
+      setTareas(prev => prev.filter(tar => tar.id !== id)); //functional update
+
+    } catch(error) {
+      console.error('Error eliminando tarea', error);
+      setError('A ocurrido un error al eliminar tarea');
+      setLoading(false);
+    }
+
   }
   
 

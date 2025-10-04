@@ -3,7 +3,7 @@
     {
       "id": "1",
       "title": "Aprender React",
-      "completed": false,
+      "completed": true,
       "priority": "alta"
     },
     {
@@ -15,31 +15,25 @@
     {
       "id": "3",
       "title": "Aplicar JSON server",
-      "completed": false,
+      "completed": true,
       "priority": "alta"
     },
     {
       "id": "a279",
       "title": "Prueba POST",
-      "completed": false,
-      "priority": "media"
-    },
-    {
-      "id": "c3a9",
-      "title": "Segunda Prueba POST",
-      "completed": false,
-      "priority": "media"
-    },
-    {
-      "id": "5da0",
-      "title": "Tercera Prueba POST",
-      "completed": false,
+      "completed": true,
       "priority": "media"
     },
     {
       "id": "dc04",
       "title": "Cuarta prueba POST",
       "completed": false,
+      "priority": "media"
+    },
+    {
+      "id": "91fa",
+      "title": "Quinta test",
+      "completed": true,
       "priority": "media"
     }
   ]
